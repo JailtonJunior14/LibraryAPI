@@ -31,6 +31,12 @@ namespace Library.Data.Repositorys.UserRepository
 
             return exists;
         }
+        public async Task<User?> Login(string email)
+        {
+            var user = await _context.User.Where(e => e.Email == email).FirstAsync();
+
+            return user;
+        }
         public async Task<User> Create(User user)
         {
             await _context.AddAsync(user);
