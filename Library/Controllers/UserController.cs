@@ -1,5 +1,7 @@
-﻿using Library.Data.DTOs;
+﻿using Library.Logs;
+using Library.Data.DTOs;
 using Library.Services.UserService;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -17,6 +19,7 @@ namespace Library.Controllers
             _userService = userService; 
         }
         // GET: api/<ValuesController>
+        [Authorize]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<UserDTO>>> GetAll()
         {
@@ -50,6 +53,7 @@ namespace Library.Controllers
             }
             catch (Exception ex)
             {
+                Log.LogToFile("byid toekn", ex.Message);
                 return BadRequest(ex.Message);
             }
         }

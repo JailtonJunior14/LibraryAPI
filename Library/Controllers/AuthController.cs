@@ -1,5 +1,6 @@
 ﻿using Library.Data.DTOs;
 using Library.Services.AuthService;
+using Library.Services.TokenService;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -22,7 +23,9 @@ namespace Library.Controllers
             {
                 var login = await _authService.Login(dto.Email, dto.Password);
 
-                return Ok(login);
+                var token = TokenService.GenerateToken(login);
+
+                return Ok(token);
             }
             catch (UnauthorizedAccessException ex)
             {
