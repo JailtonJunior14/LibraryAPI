@@ -15,13 +15,13 @@ namespace Library.Services.UserService
             _passwordHelper = passwordHelper;
             _userRepository = userRepository;
         }
-
         public async Task<IEnumerable<UserDTO>> GetAll()
         {
             var usersDTO = await _userRepository.GetAll();
 
             return usersDTO.Select(u => new UserDTO
             {
+                Role = u.Role,
                 Email = u.Email,
                 Name = u.UserName
             }).ToList();
@@ -43,6 +43,7 @@ namespace Library.Services.UserService
         {
             try
             {
+
                 var userPass = new User();
                 var encryptedPassword = _passwordHelper.HashPassWord(userPass, dto.Password);
 
@@ -59,6 +60,7 @@ namespace Library.Services.UserService
                     
                 var user = new User
                 {
+                    Role = dto.Role,
                     Email = dto.Email,
                     UserName = dto.Name,
                     PasswordHash = encryptedPassword
@@ -70,6 +72,7 @@ namespace Library.Services.UserService
 
                 return new UserInsertDTO
                 {
+                    Role = userF.Role,
                     Email = userF.Email,
                     Name = userF.UserName,
                     Password = userF.PasswordHash

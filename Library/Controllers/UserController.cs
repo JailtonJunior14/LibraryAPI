@@ -19,7 +19,7 @@ namespace Library.Controllers
             _userService = userService; 
         }
         // GET: api/<ValuesController>
-        [Authorize]
+        //[Authorize(Roles = "admin")]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<UserDTO>>> GetAll()
         {

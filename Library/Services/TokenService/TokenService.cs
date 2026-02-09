@@ -8,7 +8,7 @@ namespace Library.Services.TokenService
 {
     public class TokenService
     {
-        public static object GenerateToken(LoginResponseDTO loginDto)
+        public static object GenerateToken(LoginResponseDTO user)
         {
             var key = Encoding.ASCII.GetBytes(Key.Secret);
 
@@ -17,14 +17,15 @@ namespace Library.Services.TokenService
             {
                 Subject = new System.Security.Claims.ClaimsIdentity(new Claim[]
                 {
-                    new Claim("UserID", loginDto.Id.ToString()),
-                    
+                    new Claim("UserID", user.Id.ToString()),
+                    new Claim(ClaimTypes.Role, RoleFactory(((int)user.Role)))
+
                 }),
                 Expires = DateTime.UtcNow.AddHours(3),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
             };
             //gerar o token
-            var tokenHandler = new JwtSecurityTokenHandler(); 
+            var tokenHandler = new JwtSecurityTokenHandler();
 
             var token = tokenHandler.CreateToken(tokenConfig);
 
@@ -34,6 +35,20 @@ namespace Library.Services.TokenService
             {
                 token = tokenString
             };
+        }
+        private static string RoleFactory(int role)
+        {
+            switch (role)
+            {
+                case 0:
+                    return "admin";
+                case 1:
+                    return "librarian";
+                case 2:
+                    return "student";
+                default:
+                    throw new Exception();
+            }
         }
     }
 }

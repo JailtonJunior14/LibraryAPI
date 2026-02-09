@@ -28,7 +28,7 @@ namespace Library.Services.AuthService
                     return new LoginResponseDTO
                     {
                         Email = email,
-                        Msg = "logado"
+                        Role = user.Role,
                     };
                 }
                 else

@@ -11,14 +11,25 @@ namespace Library.Data.Persistence
         }
 
         public DbSet<User> User { get; set; }
-
+        public DbSet<Book> Books { get; set; }
+        public DbSet<Loan> Loans { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
-            builder.Entity<User>(e =>
+            builder.Entity<User>(u =>
             {
-                e.HasKey(de => de.Id);
+                u.HasKey(de => de.Id);
+            });
+
+            builder.Entity<Book>(b =>
+            {
+                b.HasKey(de => de.Id);
+            });
+
+            builder.Entity<Loan>(l =>
+            {
+                l.HasKey(de => de.Id);
             });
         }
     }
