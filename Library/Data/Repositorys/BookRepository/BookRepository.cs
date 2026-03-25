@@ -15,7 +15,7 @@ namespace Library.Data.Repositorys.BookRepository
 
         public async Task<IEnumerable<Book>> GetAll()
         {
-            return await _context.Books.ToListAsync();
+            return await _context.Books.Where(b => b.IsDeleted == false).ToListAsync();
         }
 
         public async Task<Book?> GetById(Guid id)
@@ -32,10 +32,29 @@ namespace Library.Data.Repositorys.BookRepository
 
         }
 
-        public async Task<bool> ExistsISBN(int isbn)
+        public async Task<bool> ExistsISBN(long isbn)
         {
             bool exists = await _context.Books.AnyAsync(b => b.ISBN == isbn);
             return exists;
+        }
+
+        public async Task<Book> GetByISBN(long isbn)
+        {
+            return await _context.Books.FirstAsync(b => b.ISBN == isbn);
+        }
+
+        public async Task<Book> Update(Book book)
+        {
+            await _context.SaveChangesAsync();
+
+            return book;
+        }
+
+        public async Task<bool> Delete(Guid id)
+        {
+            await _context.SaveChangesAsync();
+
+            return true;
         }
     }
 }

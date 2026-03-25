@@ -71,15 +71,37 @@ namespace Library.Controllers
         }
 
         // PUT api/<BookController>/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
+        [HttpPut]
+        public async Task<IActionResult> Put([FromBody] BookUpdateDTO dto)
         {
+            try
+            {
+                var book = await _bookService.Update(dto);
+                return CreatedAtAction(
+                    nameof(Put),
+                    book);
+            }catch(Exception ex)
+            {
+                Log.LogToFile("controllerbook put", ex.Message);
+                return BadRequest(ex.Message);
+            }
         }
 
         // DELETE api/<BookController>/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
+        [HttpDelete]
+        public async Task<IActionResult> Delete([FromBody] Guid id)
         {
+            try
+            {
+                await _bookService.Delete(id);
+
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+                Log.LogToFile("controller book delete", ex.Message);
+                return BadRequest(ex.Message);
+            }
         }
     }
 }

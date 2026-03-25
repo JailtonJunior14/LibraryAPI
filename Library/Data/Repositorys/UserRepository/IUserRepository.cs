@@ -9,5 +9,8 @@ namespace Library.Data.Repositorys.UserRepository
         public Task<bool> EmailExists(string email);
         public Task<User?> Login(string email);
         public Task<User> Create(User user);
+        public Task<User> Update(User user);
+
+        public Task<bool> Delete(Guid id); 
     }
 }

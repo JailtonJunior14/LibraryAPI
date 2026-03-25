@@ -14,7 +14,7 @@ namespace Library.Data.Repositorys.UserRepository
 
         public async Task<IEnumerable<User>> GetAll()
         {
-            var users = await _context.User.ToListAsync(); //passar para listar apenas os com is delete false
+            var users = await _context.User.Where(u => u.IsDeleted == false).ToListAsync(); //passar para listar apenas os com is delete false
 
             return users;
         }
@@ -42,6 +42,18 @@ namespace Library.Data.Repositorys.UserRepository
             await _context.AddAsync(user);
             await _context.SaveChangesAsync();
             return user;
+        }
+
+        public async Task<User> Update(User user)
+        {
+            await _context.SaveChangesAsync();
+            return user;
+        }
+
+        public async Task<bool> Delete(Guid id)
+        {
+            await _context.SaveChangesAsync();
+            return true;
         }
     }
 }

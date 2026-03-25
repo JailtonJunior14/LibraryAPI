@@ -1,15 +1,9 @@
 ﻿using Library.Enums;
 
-namespace Library.Data.Entities
+namespace Library.Data.DTOs
 {
-   
-    public class Loan
+    public class LoanInsertDTO
     {
-        public Loan()
-        {
-            Status = 0;
-        }
-        public Guid Id { get; set; }
         public Guid Book { get; set; }
         public Guid IdUser { get; set; }
         public Guid Idlibrarian { get; set; }

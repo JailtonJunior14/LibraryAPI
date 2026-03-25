@@ -2,6 +2,8 @@
 using Library.Data.Entities;
 using Library.Data.Repositorys.BookRepository;
 using Library.Logs;
+using System.Data.Common;
+using System.Reflection.Metadata.Ecma335;
 
 namespace Library.Services.BookService
 {
@@ -29,7 +31,9 @@ namespace Library.Services.BookService
                     ISBN = x.ISBN,
                     Quantity = x.Quantity,
                 });
-            } catch (Exception ex)
+            }
+            
+            catch (Exception ex)
             {
                 Log.LogToFile("Getall bookservice", ex.Message);
                 throw;
@@ -64,7 +68,9 @@ namespace Library.Services.BookService
             {
                 var isbnexists = await _bookRepository.ExistsISBN(dto.ISBN);
                 if (isbnexists)
-                    throw new ApplicationException("ISBN já cadastrado");
+                {
+                    throw new ApplicationException("ISBN já cadastrado.");
+                }
 
                 var book = new Book
                 {
@@ -87,16 +93,70 @@ namespace Library.Services.BookService
                     Quantity = bookf.Quantity,
                     YearPublication = bookf.YearPublication
                 };
-            } catch (Exception ex)
+            }
+            catch (DbException ex)
+            {
+                Log.LogToFile("Getall bookservice DbException", ex.Message);
+                throw;
+            }
+            catch (Exception ex)
             {
                 Log.LogToFile("create bookservice", ex.Message);
                 throw;
             }
         }
 
-        public async Task<BookInsertDTO> Update(BookInsertDTO dto)
+        public async Task<BookUpdateDTO> Update(BookUpdateDTO dto)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var bookU = await _bookRepository.GetById(dto.Id) ?? throw new Exception("Livro não encontrado");
+
+                if (dto.Author != null) bookU.Author = dto.Author;
+                if (dto.Publisher != null) bookU.Publisher = dto.Publisher;
+                if (dto.YearPublication != null) bookU.YearPublication = (int)dto.YearPublication;
+                if (dto.Title != null) bookU.Title = dto.Title;
+                if (dto.Quantity != null) bookU.Quantity = (int)dto.Quantity;
+
+                var book = await _bookRepository.Update(bookU);
+
+                return new BookUpdateDTO
+                {
+                    Author = book.Author,
+                    Publisher = book.Publisher,
+                    YearPublication = book.YearPublication,
+                    Id = book.Id,
+                    ISBN = book.ISBN,
+                    Quantity = book.Quantity,
+                    Title = book.Title
+                };
+            }
+            catch(Exception ex)
+            {
+                Log.LogToFile("erro update", ex.Message);
+                throw;
+            }
         }
+    
+        public async Task<bool> Delete(Guid id)
+        {
+            try
+            {
+                var book = await _bookRepository.GetById(id) ?? throw new Exception("Livro não encontrado");
+
+                book.IsDeleted = true;
+
+                await _bookRepository.Delete(id);
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Log.LogToFile("delete service", ex.Message);
+                throw;
+            }
+
+        }
+
     }
 }

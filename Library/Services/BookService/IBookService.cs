@@ -7,6 +7,7 @@ namespace Library.Services.BookService
         public Task<IEnumerable<BookDTO>> GetAll();
         public Task<BookDTO> GetById(Guid id);
         public Task<BookInsertDTO> Create(BookInsertDTO insertDTO);
-        public Task<BookInsertDTO> Update(BookInsertDTO insertDTO);
+        public Task<BookUpdateDTO> Update(BookUpdateDTO insertDTO);
+        public Task<bool> Delete(Guid id);
     }
 }

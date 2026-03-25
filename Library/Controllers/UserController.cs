@@ -3,6 +3,8 @@ using Library.Data.DTOs;
 using Library.Services.UserService;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Library.Services.AuthService;
+using Library.Services.TokenService;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -13,13 +15,15 @@ namespace Library.Controllers
     public class UserController : ControllerBase
     {
         private readonly IUserService _userService;
+        private readonly IAuthService _authService;
 
-        public UserController(IUserService userService)
+        public UserController(IUserService userService, IAuthService authService)
         {
-            _userService = userService; 
+            _userService = userService;
+            _authService = authService;
         }
         // GET: api/<ValuesController>
-        //[Authorize(Roles = "admin")]
+        [Authorize(Roles = "admin, librarian")]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<UserDTO>>> GetAll()
         {
@@ -35,6 +39,7 @@ namespace Library.Controllers
         }
 
         // GET getbyid user
+        [Authorize(Roles = "admin, librarian")]
         [HttpGet("{id}")]
         public async Task<ActionResult<IEnumerable<UserDTO?>>> GetById(Guid id)
         {
@@ -64,11 +69,21 @@ namespace Library.Controllers
         {
             try
             {
-               var user = await _userService.Create(dto);
+                var user = await _userService.Create(dto);
+                var login = new LoginResponseDTO
+                {
+                    Id = user.Id,
+                    Email = user.Email,
+                    Role = user.Role
+                };
+                var token = TokenService.GenerateToken(login);
 
+                user.Token = token;
                 return CreatedAtAction(
                     nameof(Post),
-                    user);
+                    user
+                    //token
+                    );
 
             }
             catch (ApplicationException ex)
@@ -88,15 +103,38 @@ namespace Library.Controllers
         }
 
         // PUT api/<ValuesController>/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
+        [HttpPut]
+        public async Task<IActionResult> Put([FromBody] UserUpdateDTO dto)
         {
+            try
+            {
+                var userUpdate = await _userService.Update(dto);
+
+                return CreatedAtAction(
+                    nameof(Put), userUpdate);
+
+            }catch(Exception e)
+            {
+                return BadRequest(e.Message);
+            }
         }
 
         // DELETE api/<ValuesController>/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
+        [HttpDelete]
+        //[HttpDelete("{id}")]
+        public async Task<IActionResult> Delete([FromBody] Guid id)
         {
+            try
+            {
+                await _userService.Delete(id);
+
+                return NoContent();
+
+            }catch(Exception ex)
+            {
+                Log.LogToFile("controller delete user",  ex.Message);
+                return BadRequest(ex.Message);
+            }
         }
     }
 }

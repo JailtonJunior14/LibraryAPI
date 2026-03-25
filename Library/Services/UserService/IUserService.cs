@@ -6,7 +6,9 @@ namespace Library.Services.UserService
     {
         public Task<IEnumerable<UserDTO>> GetAll();
         public Task<UserDTO?>GetById(Guid id);
-        public Task<UserInsertDTO> Create(UserInsertDTO dto);
-        
+        public Task<UserDTO> Create(UserInsertDTO dto);
+        public Task<UserUpdateDTO> Update(UserUpdateDTO dTO);
+
+        public Task<bool> Delete(Guid id);
     }
 }

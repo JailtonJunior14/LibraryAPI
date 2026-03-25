@@ -20,6 +20,7 @@ namespace Library.Data.Persistence
             builder.Entity<User>(u =>
             {
                 u.HasKey(de => de.Id);
+                
             });
 
             builder.Entity<Book>(b =>
