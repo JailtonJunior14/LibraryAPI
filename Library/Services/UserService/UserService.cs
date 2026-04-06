@@ -23,34 +23,46 @@ namespace Library.Services.UserService
             {
                 var usersDTO = await _userRepository.GetAll();
 
-                return usersDTO.Select(u => new UserDTO
+                return usersDTO == null
+                    ? throw new ApplicationException("Nenhum usuario encontrado!")
+                    : (IEnumerable<UserDTO>)usersDTO.Select(u => new UserDTO
                 {
                     Id = u.Id,
                     Role = u.Role,
                     Email = u.Email,
                     Name = u.UserName,
-                    
+
                 }).ToList();
             }
             catch (Exception ex)
             {
-                Log.LogToFile("erro get all user", ex.Message);
+                Log.LogToFile("erro get all user", ex.GetType().ToString(), ex.Message);
                 throw;
             }
             
         }
         public async Task<UserDTO?> GetById(Guid id)
         {
-            var userDTO =await _userRepository.GetById(id);
-
-            if (userDTO == null)
-                throw new ApplicationException("Usuario não encontrado");
-
-            return new UserDTO
+            try
             {
-                Email = userDTO.Email,
-                Name = userDTO.UserName
-            };
+                var userDTO = await _userRepository.GetById(id);
+
+                return userDTO == null
+                    ? throw new ApplicationException("Usuario não encontrado")
+                    : new UserDTO
+                {
+                    Id = userDTO.Id,
+                    Role = userDTO.Role,
+                    Email = userDTO.Email,
+                    Name = userDTO.UserName
+                };
+
+            }catch(Exception ex)
+            {
+                Log.LogToFile("erro get id user", ex.GetType().ToString(), ex.Message);
+                throw;
+            }
+            
         }
         public async Task<UserDTO> Create(UserInsertDTO dto)
         {
@@ -81,7 +93,7 @@ namespace Library.Services.UserService
 
                 var userF = await _userRepository.Create(user);
 
-                Log.LogToFile("Cadastro", "sucesso");
+                Log.LogToFile("Cadastro", "deu certo", "sucesso");
 
                 return new UserDTO
                 {
@@ -94,7 +106,7 @@ namespace Library.Services.UserService
             }
             catch (Exception ex)
             {
-                Log.LogToFile("Cadastro erro", ex.Message);
+                Log.LogToFile("Cadastro erro", ex.GetType().ToString(), ex.Message);
 
                 throw;
             }
@@ -125,7 +137,7 @@ namespace Library.Services.UserService
                 };
             }catch (Exception ex)
             {
-                Log.LogToFile("update user error: ", ex.Message);
+                Log.LogToFile("update user error: ", ex.GetType().ToString(), ex.Message);
                 throw;
             }
 
@@ -145,7 +157,7 @@ namespace Library.Services.UserService
 
             }catch(Exception ex)
             {
-                Log.LogToFile("Delete user erro: ", ex.Message);
+                Log.LogToFile("Delete user erro: ", ex.GetType().ToString(), ex.Message);
                 throw;
             }
         }

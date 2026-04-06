@@ -38,12 +38,12 @@ namespace Library.Services.AuthService
             }
             catch (ApplicationException ex)
             {
-                Log.LogToFile("ApplicationException auth", ex.Message);
+                Log.LogToFile("ApplicationException auth", ex.GetType().ToString(), ex.Message);
                 throw;
             }
             catch (Exception ex)
             {
-                Log.LogToFile("Exception auth", ex.Message);
+                Log.LogToFile("Exception auth", ex.GetType().ToString(), ex.Message);
                 throw;
             }
         }

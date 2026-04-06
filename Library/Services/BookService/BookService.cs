@@ -20,22 +20,24 @@ namespace Library.Services.BookService
         {
             try
             {
-                var book = await _bookRepository.GetAll();
+                var books = await _bookRepository.GetAll();
 
-                return book.Select(x => new BookDTO
-                {
-                    Title = x.Title,
-                    Author = x.Author,
-                    Publisher = x.Publisher,
-                    YearPublication = x.YearPublication,
-                    ISBN = x.ISBN,
-                    Quantity = x.Quantity,
-                });
+                return books == null
+                    ? throw new Exception("Nenhum livro encontrado!")
+                    : books.Select(b => new BookDTO
+                    {
+                        Title = b.Title,
+                        Author = b.Author,
+                        Publisher = b.Publisher,
+                        YearPublication = b.YearPublication,
+                        ISBN = b.ISBN,
+                        Quantity = b.Quantity
+                    });
             }
-            
+
             catch (Exception ex)
             {
-                Log.LogToFile("Getall bookservice", ex.Message);
+                Log.LogToFile("Getall bookservice", ex.GetType().ToString(), ex.Message);
                 throw;
             }
         }
@@ -45,7 +47,10 @@ namespace Library.Services.BookService
             try
             {
                 var book = await _bookRepository.GetById(Id);
-                return new BookDTO
+
+                return book == null
+                    ? throw new Exception("Nenhum livro encontrado!")
+                    : new BookDTO
                 {
                     Title = book.Title,
                     Author = book.Author,
@@ -57,11 +62,59 @@ namespace Library.Services.BookService
             }
             catch (Exception ex)
             {
-                Log.LogToFile("getbyid bookservice", ex.Message);
+                Log.LogToFile("getbyid bookservice", ex.GetType().ToString(), ex.Message);
                 throw;
             }
         }
 
+        public async Task<IEnumerable<BookDTO>> GetByTitle(string title)
+        {
+            try
+            {
+                var books = await _bookRepository.GetByTitle(title);
+
+                return books == null 
+                    ? throw new Exception("Nenhum livro encontrado") 
+                    : books.Select(b => new BookDTO 
+                    {
+                        Title = b.Title,
+                        Author = b.Author,
+                        Publisher = b.Publisher,
+                        YearPublication = b.YearPublication,
+                        ISBN = b.ISBN,
+                        Quantity = b.Quantity
+                    });
+            }
+            catch (Exception ex)
+            {
+                Log.LogToFile("Gettitle bookservice", ex.GetType().ToString(), ex.Message);
+                throw;
+            }
+        }
+
+        public async Task<IEnumerable<BookDTO>> GetByAuthor(string author)
+        {
+            try
+            {
+                var books = await _bookRepository.GetByAuthor(author);
+
+                return books == null 
+                    ? throw new Exception("Nenhum livro encontrado") 
+                    : books.Select(b => new BookDTO
+                    {
+                        Title = b.Title,
+                        Author = b.Author,
+                        Publisher = b.Publisher,
+                        YearPublication = b.YearPublication,
+                        ISBN = b.ISBN,
+                        Quantity = b.Quantity
+                    });
+            }catch(Exception ex)
+            {
+                Log.LogToFile("Getauthor bookservice", ex.GetType().ToString(), ex.Message);
+                throw;
+            }
+        }
         public async Task<BookInsertDTO> Create(BookInsertDTO dto)
         {
             try
@@ -96,12 +149,12 @@ namespace Library.Services.BookService
             }
             catch (DbException ex)
             {
-                Log.LogToFile("Getall bookservice DbException", ex.Message);
+                Log.LogToFile("Getall bookservice DbException", ex.GetType().ToString(), ex.Message);
                 throw;
             }
             catch (Exception ex)
             {
-                Log.LogToFile("create bookservice", ex.Message);
+                Log.LogToFile("create bookservice", ex.GetType().ToString(), ex.Message);
                 throw;
             }
         }
@@ -133,7 +186,7 @@ namespace Library.Services.BookService
             }
             catch(Exception ex)
             {
-                Log.LogToFile("erro update", ex.Message);
+                Log.LogToFile("erro update", ex.GetType().ToString(), ex.Message);
                 throw;
             }
         }
@@ -152,7 +205,7 @@ namespace Library.Services.BookService
             }
             catch (Exception ex)
             {
-                Log.LogToFile("delete service", ex.Message);
+                Log.LogToFile("delete service", ex.GetType().ToString(), ex.Message);
                 throw;
             }
 

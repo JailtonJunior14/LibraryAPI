@@ -14,6 +14,8 @@ using Microsoft.OpenApi.Models;
 using System.Text.Json.Serialization;
 using Library.Data.Repositorys.BookRepository;
 using Library.Services.BookService;
+using Library.Data.Repositorys.LoanRepository;
+using Library.Services.LoanService;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -26,6 +28,7 @@ builder.Services.AddDbContext<LibraryDbContext>(o => o.UseSqlServer(
     ));
 
 var key = Encoding.ASCII.GetBytes(Key.Secret);
+
 
 builder.Services.AddAuthentication(x =>
 {
@@ -51,6 +54,13 @@ builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IBookRepository, BookRepository>();
 builder.Services.AddScoped<IBookService, BookService>();
+builder.Services.AddScoped<ILoanRepository, LoanRepository>();
+builder.Services.AddScoped<ILoanService, LoanService>();
+
+
+builder.Services.AddHttpContextAccessor();
+
+
 builder.Services.AddControllers().AddJsonOptions(o =>
 {
     o.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());

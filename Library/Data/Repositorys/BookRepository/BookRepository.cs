@@ -20,7 +20,15 @@ namespace Library.Data.Repositorys.BookRepository
 
         public async Task<Book?> GetById(Guid id)
         {
-            return await _context.Books.FindAsync(id);
+            return await _context.Books.FirstOrDefaultAsync(b => b.IsDeleted == false && b.Id == id);
+        }
+        public async Task<IEnumerable<Book?>> GetByTitle(string title)
+        {
+            return await _context.Books.Where(b => b.Title == title && b.IsDeleted == false).ToListAsync();
+        }
+        public async Task<IEnumerable<Book?>> GetByAuthor(string author)
+        {
+            return await _context.Books.Where(b => b.Author == author && b.IsDeleted == false).ToListAsync();
         }
 
         public async Task<Book> Create(Book book)

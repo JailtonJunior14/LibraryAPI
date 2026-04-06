@@ -2,6 +2,7 @@
 using Library.Logs;
 using Library.Services.BookService;
 using Microsoft.AspNetCore.Mvc;
+using System.Net.WebSockets;
 using System.Threading.Tasks;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -29,8 +30,8 @@ namespace Library.Controllers
 
             }catch (Exception ex)
             {
-                Log.LogToFile("Getallbook controller", ex.Message);
-                throw;
+                Log.LogToFile("Getallbook controller", ex.GetType().ToString(), ex.Message);
+                return BadRequest(ex.Message);
             }
         }
 
@@ -46,11 +47,45 @@ namespace Library.Controllers
             }
             catch (Exception ex)
             {
-                Log.LogToFile("Getbyid controller", ex.Message);
-                throw;
+                Log.LogToFile("Getbyid controller", ex.GetType().ToString(), ex.Message);
+                return BadRequest(ex.Message);
+                
             }
         }
 
+        [HttpGet("{title}")]
+        public async Task<ActionResult<BookDTO>> GetByTitle(string title)
+        {
+            try
+            {
+                var books = await _bookService.GetByTitle(title);
+
+                return Ok(books);
+            }
+            catch (Exception ex)
+            {
+                Log.LogToFile("Getbytitle controller", ex.GetType().ToString(), ex.Message);
+                return BadRequest(ex.Message);
+
+            }
+        }
+
+        [HttpGet("{author}")]
+        public async Task<ActionResult<BookDTO>> GetByAuthor(string author)
+        {
+            try
+            {
+                var books = await _bookService.GetByAuthor(author);
+
+                return Ok(books);
+            }
+            catch (Exception ex)
+            {
+                Log.LogToFile("Getbyauthor controller", ex.GetType().ToString(), ex.Message);
+                return BadRequest(ex.Message);
+
+            }
+        }
         // POST api/<BookController>
         [HttpPost]
         public async Task<IActionResult> Post([FromBody] BookInsertDTO dto)
@@ -65,7 +100,7 @@ namespace Library.Controllers
 
             }catch (Exception ex)
             {
-                Log.LogToFile("controllerbook post", ex.Message);
+                Log.LogToFile("controllerbook post", ex.GetType().ToString(), ex.Message);
                 return BadRequest(ex.Message);
             }
         }
@@ -82,7 +117,7 @@ namespace Library.Controllers
                     book);
             }catch(Exception ex)
             {
-                Log.LogToFile("controllerbook put", ex.Message);
+                Log.LogToFile("controllerbook put", ex.GetType().ToString(), ex.Message);
                 return BadRequest(ex.Message);
             }
         }
@@ -99,7 +134,7 @@ namespace Library.Controllers
             }
             catch (Exception ex)
             {
-                Log.LogToFile("controller book delete", ex.Message);
+                Log.LogToFile("controller book delete", ex.GetType().ToString(), ex.Message);
                 return BadRequest(ex.Message);
             }
         }

@@ -20,7 +20,7 @@ namespace Library.Data.Repositorys.UserRepository
         }
         public async Task<User?> GetById(Guid id)
         {
-            var user = await _context.User.FindAsync(id);
+            var user = await _context.User.FirstOrDefaultAsync(u => u.IsDeleted == false && u.Id == id);
 
             return user;
         }

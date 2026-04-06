@@ -58,7 +58,7 @@ namespace Library.Controllers
             }
             catch (Exception ex)
             {
-                Log.LogToFile("byid toekn", ex.Message);
+                Log.LogToFile("byid toekn", ex.GetType().ToString(), ex.Message);
                 return BadRequest(ex.Message);
             }
         }
@@ -132,7 +132,7 @@ namespace Library.Controllers
 
             }catch(Exception ex)
             {
-                Log.LogToFile("controller delete user",  ex.Message);
+                Log.LogToFile("controller delete user",  ex.GetType().ToString(), ex.Message);
                 return BadRequest(ex.Message);
             }
         }

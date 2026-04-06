@@ -63,7 +63,13 @@ namespace Library.Persistence.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("Book")
+                    b.Property<DateTime>("DateCheckOut")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("DateReturn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("IdBook")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid>("IdUser")

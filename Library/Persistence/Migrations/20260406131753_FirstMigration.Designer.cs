@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Library.Persistence.Migrations
 {
     [DbContext(typeof(LibraryDbContext))]
-    [Migration("20260325190936_FirstMigration")]
+    [Migration("20260406131753_FirstMigration")]
     partial class FirstMigration
     {
         /// <inheritdoc />
@@ -66,7 +66,13 @@ namespace Library.Persistence.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("Book")
+                    b.Property<DateTime>("DateCheckOut")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("DateReturn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("IdBook")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid>("IdUser")
