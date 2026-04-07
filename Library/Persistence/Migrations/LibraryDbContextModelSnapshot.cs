@@ -63,25 +63,31 @@ namespace Library.Persistence.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<Guid>("BookId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<DateTime>("DateCheckOut")
                         .HasColumnType("datetime2");
 
                     b.Property<DateTime>("DateReturn")
                         .HasColumnType("datetime2");
 
-                    b.Property<Guid>("IdBook")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("IdUser")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("Idlibrarian")
+                    b.Property<Guid>("LibrarianId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<int>("Status")
                         .HasColumnType("int");
 
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("BookId");
+
+                    b.HasIndex("LibrarianId");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("Loans");
                 });
@@ -143,6 +149,33 @@ namespace Library.Persistence.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("User");
+                });
+
+            modelBuilder.Entity("Library.Data.Entities.Loan", b =>
+                {
+                    b.HasOne("Library.Data.Entities.Book", "Book")
+                        .WithMany()
+                        .HasForeignKey("BookId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Library.Data.Entities.User", "Librarian")
+                        .WithMany()
+                        .HasForeignKey("LibrarianId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Library.Data.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Book");
+
+                    b.Navigation("Librarian");
+
+                    b.Navigation("User");
                 });
 #pragma warning restore 612, 618
         }

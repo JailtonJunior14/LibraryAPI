@@ -8,7 +8,7 @@ namespace Library.Data.DTOs
         public Guid Id { get; set; }
         public string Name { get; set; }
         public string Email { get; set; }
-        public bool IsDeleted { get; set; }
-        public object Token { get; set; }
+        public bool? IsDeleted { get; set; }
+        public object? Token { get; set; }
     }
 }

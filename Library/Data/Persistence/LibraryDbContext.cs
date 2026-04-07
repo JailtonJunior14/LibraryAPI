@@ -31,6 +31,19 @@ namespace Library.Data.Persistence
             builder.Entity<Loan>(l =>
             {
                 l.HasKey(de => de.Id);
+                l.HasOne(l => l.User)
+                .WithMany()
+                .HasForeignKey(l => l.UserId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+                l.HasOne(l => l.Librarian)
+                .WithMany()
+                .HasForeignKey(l => l.LibrarianId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+                l.HasOne(l => l.Book)
+                .WithMany()
+                .HasForeignKey(l => l.BookId);
             });
         }
     }

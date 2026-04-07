@@ -27,6 +27,7 @@ namespace Library.Services.AuthService
                 {
                     return new LoginResponseDTO
                     {
+                        Id = user.Id,
                         Email = email,
                         Role = user.Role,
                     };

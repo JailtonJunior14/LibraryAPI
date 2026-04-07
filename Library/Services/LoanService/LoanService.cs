@@ -5,6 +5,7 @@ using Library.Data.Repositorys.LoanRepository;
 using Library.Data.Repositorys.UserRepository;
 using Library.Logs;
 using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Primitives;
 using System.Data.Common;
 using System.Security.AccessControl;
@@ -32,23 +33,36 @@ namespace Library.Services.LoanService
             try
             {
                 var loans = await _loanRepository.GetAll();
-                var books = await _bookRepository.GetAll();
-                var book = books.Select(b => new BookDTO
-                {
-                    Author = b.Author,
-                    ISBN = b.ISBN,
-                    Publisher = b.Publisher,
-                    Quantity = b.Quantity,
-                    Title = b.Title,
-                    YearPublication = b.YearPublication
-                });
+                
 
-                return loans.Select(l => new LoanDTO
+                return loans.Select( l => new LoanDTO
                 {
-                    Book = (BookDTO)book,
+                    Book = new BookDTO
+                    {
+                        Author = l.Book.Author,
+                        ISBN = l.Book.ISBN,
+                        Publisher = l.Book.Publisher,
+                        Quantity = l.Book.Quantity,
+                        Title = l.Book.Title,
+                        YearPublication = l.Book.YearPublication
+                    },
+                    User = new UserDTO
+                    {
+                        Email = l.User.Email,
+                        Id = l.User.Id,
+                        Name = l.User.UserName,
+                        Role = l.User.Role,
+                    },
+                    Librarian = new UserDTO
+                    {
+                        Email = l.Librarian.Email,
+                        Id = l.Librarian.Id,
+                        Name = l.Librarian.UserName,
+                        Role = l.Librarian.Role,
+                    },
                     Status = l.Status,
-                    Idlibrarian = l.Idlibrarian,
-                    IdUser = l.IdUser,
+                    Idlibrarian = l.LibrarianId,
+                    IdUser = l.UserId,
                     DateCheckOut = l.DateCheckOut,
                     DateReturn = l.DateReturn
                 });
@@ -85,7 +99,7 @@ namespace Library.Services.LoanService
                 if (await _userRepository.GetById(dto.IdUser) == null)
                     throw new Exception("USUARIO NÃO ENCONTRADO");
 
-
+                var user = await _userRepository.GetById(dto.IdUser);
 
                 var loanuser = await _loanRepository.GetByUserId(dto.IdUser) ?? throw new Exception("Usuario não encontrado");
 
@@ -99,9 +113,9 @@ namespace Library.Services.LoanService
 
                 var loan = new Loan
                 {
-                    IdUser = dto.IdUser,
-                    Idlibrarian = Guid.Parse(librarian),
-                    IdBook = dto.IdBook,
+                    UserId = dto.IdUser,
+                    LibrarianId = Guid.Parse(librarian),
+                    BookId = dto.IdBook,
                     DateCheckOut = dto.DateCheckOut,
                     DateReturn = dto.DateReturn,
                     Status = dto.Status,
@@ -114,8 +128,15 @@ namespace Library.Services.LoanService
                     Status = loan.Status,
                     DateCheckOut = loan.DateCheckOut,
                     DateReturn = loan.DateReturn,
-                    Idlibrarian = loan.Idlibrarian,
-                    IdUser = loan.IdUser,
+                    Idlibrarian = loan.LibrarianId,
+                    IdUser = loan.UserId,
+                    User = new UserDTO
+                    {
+                        Email = user.Email,
+                        Name = user.UserName,
+                        Id = dto.IdUser,
+
+                    },
                     Book = new BookDTO
                     {
                         Author = book.Author,
@@ -126,10 +147,16 @@ namespace Library.Services.LoanService
                         YearPublication = book.YearPublication
                     },
                 };
-            }catch(Exception ex)
+            }catch(DbUpdateException ex)
             {
                 
-                Log.LogToFile("service create loan", ex.GetType().ToString(), ex.Message);
+                Log.LogToFile("service create loan dbupdateexception", ex.GetType().ToString(), ex.Message);
+                throw;
+            }
+            catch (Exception ex)
+            {
+
+                Log.LogToFile("service create loan exception", ex.GetType().ToString(), ex.Message);
                 throw;
             }
 
@@ -141,8 +168,8 @@ namespace Library.Services.LoanService
             {
                 var loan = await _loanRepository.GetById(dto.Id) ?? throw new Exception("Emprestimo não encontrado");
 
-                if(dto.IdUser != null) loan.IdUser = (Guid)dto.IdUser;
-                if (dto.IdBook != null) loan.IdBook = (Guid)dto.IdBook;
+                if(dto.IdUser != null) loan.UserId = (Guid)dto.IdUser;
+                if (dto.IdBook != null) loan.BookId = (Guid)dto.IdBook;
                 if(dto.Status != null) loan.Status = (Enums.LoanRole)dto.Status;
                 if(dto.DateCheckOut != null) loan.DateCheckOut = (DateTime)dto.DateCheckOut;
                 if(dto.DateReturn != null) loan.DateReturn = (DateTime)dto.DateReturn;
@@ -152,8 +179,8 @@ namespace Library.Services.LoanService
                 return new LoanUpdateDTO
                 {
                     Id = loanF.Id,
-                    IdUser = loanF.IdUser,
-                    IdBook = loanF.IdBook,
+                    IdUser = loanF.UserId,
+                    IdBook = loanF.BookId,
                     Status = loanF.Status,
                     DateCheckOut = loanF.DateCheckOut,
                     DateReturn = loanF.DateReturn,
