@@ -18,6 +18,7 @@ namespace Library.Data.Entities
         public User Librarian { get; set; }
         public LoanRole Status { get; set; }
         public DateTime DateCheckOut{ get; set; }
-        public DateTime DateReturn { get; set; }
+        public DateTime DueDate { get; set; }
+        public DateTime? DateReturn { get; set; }
     }
 }

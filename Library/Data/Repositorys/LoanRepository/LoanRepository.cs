@@ -57,7 +57,6 @@ namespace Library.Data.Repositorys.LoanRepository
             }
 
         }
-
         public async Task<Loan> Update(Loan loan)
         {
             await _context.SaveChangesAsync();
@@ -68,6 +67,12 @@ namespace Library.Data.Repositorys.LoanRepository
             await _context.SaveChangesAsync();
 
             return true;
+        }
+    
+        public async Task<Loan> ReturnBook(Loan loan)
+        {
+            await _context.SaveChangesAsync();
+            return loan;
         }
     }
 }

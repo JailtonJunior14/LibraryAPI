@@ -3,6 +3,7 @@ using Library.Data.Entities;
 using Library.Data.Repositorys.BookRepository;
 using Library.Data.Repositorys.LoanRepository;
 using Library.Data.Repositorys.UserRepository;
+using Library.Enums;
 using Library.Logs;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
@@ -117,7 +118,7 @@ namespace Library.Services.LoanService
                     LibrarianId = Guid.Parse(librarian),
                     BookId = dto.IdBook,
                     DateCheckOut = dto.DateCheckOut,
-                    DateReturn = dto.DateReturn,
+                    DueDate = dto.DueDate,
                     Status = dto.Status,
                 };
 
@@ -127,7 +128,7 @@ namespace Library.Services.LoanService
                 {
                     Status = loan.Status,
                     DateCheckOut = loan.DateCheckOut,
-                    DateReturn = loan.DateReturn,
+                    DueDate = loan.DueDate,
                     Idlibrarian = loan.LibrarianId,
                     IdUser = loan.UserId,
                     User = new UserDTO
@@ -192,6 +193,43 @@ namespace Library.Services.LoanService
                 throw;
             }
         }
-        
+     
+        public async Task<ReturnBooksDTO> ReturnBook(ReturnBooksDTO dto)
+        {
+            try
+            {
+                var loan = await _loanRepository.GetById(dto.IdLoan) ?? throw new Exception("Emprestimo não enconttrado!");
+
+                if (await _userRepository.GetById(dto.IdUser) == null && await _userRepository.GetById(dto.Idlibrarian) == null) throw new Exception("Aluno ou Bibliotecario não encontrado");
+
+                if (await _bookRepository.GetById(dto.IdBook) == null) throw new Exception("Livro não encontrado");
+
+
+                if (dto.DateReturn <= loan.DueDate)
+                {
+                    loan.Status = LoanRole.Returned;
+                }
+                else
+                {
+                    loan.Status = LoanRole.Late;
+                }
+
+                await _loanRepository.ReturnBook(loan);
+
+                return new ReturnBooksDTO
+                {
+                    DateReturn = loan.DueDate,
+                    IdBook = loan.BookId,
+                   Idlibrarian = loan.LibrarianId,
+                   IdLoan = loan.Id,
+                   IdUser = loan.UserId
+                };
+            }
+            catch (Exception e)
+            {
+                Log.LogToFile("Returnbook service", e.GetType().ToString(), e.Message);
+                throw;
+            }
+        }
     }
 }

@@ -66,7 +66,8 @@ namespace Library.Persistence.Migrations
                     LibrarianId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Status = table.Column<int>(type: "int", nullable: false),
                     DateCheckOut = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    DateReturn = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    DueDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    DateReturn = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
                 constraints: table =>
                 {

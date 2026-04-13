@@ -1,4 +1,5 @@
-﻿using Library.Data.DTOs;
+﻿using Library.Controllers;
+using Library.Data.DTOs;
 
 namespace Library.Services.LoanService
 {
@@ -10,6 +11,7 @@ namespace Library.Services.LoanService
         public Task<LoanDTO> GetById( Guid id);
         public Task<LoanDTO> Create(LoanInsertDTO dto);
         public Task<LoanUpdateDTO> Update(LoanUpdateDTO dto);
+        public Task<ReturnBooksDTO> ReturnBook(ReturnBooksDTO dto);
 
     }
 }

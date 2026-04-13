@@ -16,6 +16,8 @@ using Library.Data.Repositorys.BookRepository;
 using Library.Services.BookService;
 using Library.Data.Repositorys.LoanRepository;
 using Library.Services.LoanService;
+using Library.Services.TokenService;
+using Library.Data.Seeds;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -27,7 +29,11 @@ builder.Services.AddDbContext<LibraryDbContext>(o => o.UseSqlServer(
     //sqlServerOptions => sqlServerOptions.EnableRetryOnFailure()
     ));
 
-var key = Encoding.ASCII.GetBytes(Key.Secret);
+
+
+
+
+var key = Encoding.ASCII.GetBytes(builder.Configuration["JWT:SECRET"]);
 
 
 builder.Services.AddAuthentication(x =>
@@ -47,6 +53,7 @@ builder.Services.AddAuthentication(x =>
     };
 });
 
+builder.Services.AddScoped<TokenService>();
 builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
 builder.Services.AddScoped<IPasswordHelper, PasswordHelper>();
 builder.Services.AddScoped<IUserRepository,  UserRepository>();
@@ -105,7 +112,15 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+
+using (var context = app.Services.CreateScope())
+{
+    await InitializerDB.Seed(context.ServiceProvider);
+}
+
+
 app.UseHttpsRedirection();
+
 
 app.UseAuthentication();
 app.UseAuthorization();

@@ -69,7 +69,10 @@ namespace Library.Persistence.Migrations
                     b.Property<DateTime>("DateCheckOut")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime>("DateReturn")
+                    b.Property<DateTime?>("DateReturn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("DueDate")
                         .HasColumnType("datetime2");
 
                     b.Property<Guid>("LibrarianId")

@@ -20,7 +20,7 @@ namespace Library.Controllers
         {
             _loanService = loanService;
         }
-        // GET: api/<LoanController>
+        // GETALL: api/<LoanController>
         [HttpGet]
         public async Task<ActionResult<IEnumerable<LoanDTO>>> GetAll()
         {
@@ -37,9 +37,9 @@ namespace Library.Controllers
             }
         }
 
-        // GET api/<LoanController>/5
+        // GETById: api/<LoanController>/5
         [HttpGet("{id}")]
-        public ActionResult<string> Get( int id)
+        public ActionResult<string> GetById( int id)
         {
             throw new NotImplementedException();
         }
@@ -63,6 +63,22 @@ namespace Library.Controllers
 
                 return BadRequest(ex.Message);
 
+            }
+        }
+
+        [HttpPost("/returnBook")]
+        public async Task<IActionResult> ReturnBook([FromBody] ReturnBooksDTO dto)
+        {
+            try
+            {
+                var loan = await _loanService.ReturnBook(dto);
+
+                return Ok(loan);
+            }catch(Exception ex)
+            {
+                Log.LogToFile("loan controller ReturnedBookController", ex.GetType().ToString(), ex.Message);
+
+                return BadRequest(ex.Message);
             }
         }
 

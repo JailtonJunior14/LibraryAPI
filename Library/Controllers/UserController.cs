@@ -16,11 +16,13 @@ namespace Library.Controllers
     {
         private readonly IUserService _userService;
         private readonly IAuthService _authService;
+        private readonly TokenService _tokenService;
 
-        public UserController(IUserService userService, IAuthService authService)
+        public UserController(IUserService userService, IAuthService authService, TokenService tokenService)
         {
             _userService = userService;
             _authService = authService;
+            _tokenService = tokenService;
         }
         // GET: api/<ValuesController>
         [Authorize(Roles = "admin, librarian")]
@@ -76,7 +78,7 @@ namespace Library.Controllers
                     Email = user.Email,
                     Role = user.Role
                 };
-                var token = TokenService.GenerateToken(login);
+                var token = _tokenService.GenerateToken(login);
 
                 user.Token = token;
                 return CreatedAtAction(

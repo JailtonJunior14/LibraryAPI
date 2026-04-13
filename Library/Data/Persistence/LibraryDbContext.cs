@@ -1,13 +1,15 @@
 ﻿using Library.Data.Entities;
+using Library.Enums;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 namespace Library.Data.Persistence
 {
     public class LibraryDbContext : DbContext
     {
+        
         public LibraryDbContext(DbContextOptions<LibraryDbContext> options) : base (options)
         {
-            
         }
 
         public DbSet<User> User { get; set; }
@@ -20,12 +22,14 @@ namespace Library.Data.Persistence
             builder.Entity<User>(u =>
             {
                 u.HasKey(de => de.Id);
+                u.HasIndex(u => u.Email).IsUnique();
                 
             });
 
             builder.Entity<Book>(b =>
             {
                 b.HasKey(de => de.Id);
+                b.HasIndex(b => b.ISBN).IsUnique();
             });
 
             builder.Entity<Loan>(l =>
@@ -45,6 +49,8 @@ namespace Library.Data.Persistence
                 .WithMany()
                 .HasForeignKey(l => l.BookId);
             });
+
+            
         }
     }
 }

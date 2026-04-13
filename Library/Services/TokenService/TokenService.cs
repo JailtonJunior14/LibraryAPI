@@ -8,9 +8,15 @@ namespace Library.Services.TokenService
 {
     public class TokenService
     {
-        public static object GenerateToken(LoginResponseDTO user)
+        private readonly IConfiguration _configuration;
+         
+        public TokenService(IConfiguration configuration)
         {
-            var key = Encoding.ASCII.GetBytes(Key.Secret);
+            _configuration = configuration;
+        }
+        public object GenerateToken(LoginResponseDTO user)
+        {
+            var key = Encoding.ASCII.GetBytes(_configuration["JWT:SECRET"]);
 
             //configurar
             var tokenConfig = new SecurityTokenDescriptor

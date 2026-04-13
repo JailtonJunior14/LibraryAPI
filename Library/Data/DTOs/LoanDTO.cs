@@ -12,6 +12,8 @@ namespace Library.Data.DTOs
         public Guid Idlibrarian { get; set; }
         public LoanRole Status { get; set; }
         public DateTime DateCheckOut { get; set; }
-        public DateTime DateReturn { get; set; }
+        public DateTime DueDate {  get; set; }
+        public DateTime? DateReturn { get; set; }
+
     }
 }

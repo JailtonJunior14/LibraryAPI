@@ -11,9 +11,12 @@ namespace Library.Controllers
     public class AuthController : ControllerBase
     {
         private readonly IAuthService _authService;
-        public AuthController(IAuthService authService)
+        private readonly TokenService _tokenService;
+
+        public AuthController(IAuthService authService, TokenService tokenService)
         {
             _authService = authService;
+            _tokenService = tokenService;
         }
 
         [HttpPost]
@@ -23,7 +26,7 @@ namespace Library.Controllers
             {
                 var login = await _authService.Login(dto.Email, dto.Password);
 
-                var token = TokenService.GenerateToken(login);
+                var token = _tokenService.GenerateToken(login);
 
                 return Ok(token);
             }

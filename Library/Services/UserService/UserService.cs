@@ -70,7 +70,7 @@ namespace Library.Services.UserService
             {
 
                 var userPass = new User();
-                var encryptedPassword = _passwordHelper.HashPassWord(userPass, dto.Password);
+                
 
                 var existsemail = await _userRepository.EmailExists(dto.Email);
 
@@ -82,6 +82,9 @@ namespace Library.Services.UserService
 
                 if (dto.Password != dto.PasswordConfirmation)
                     throw new ApplicationException("Senhas não coincidem");
+                
+                
+                var encryptedPassword = _passwordHelper.HashPassWord(userPass, dto.Password);
                     
                 var user = new User
                 {
