@@ -10,8 +10,9 @@ namespace Library.Data.DTOs
         public Book Book { get; set; }
         public Guid? IdUser { get; set; }
         public User User { get; set; }
-        public LoanRole? Status { get; set; }
+        
         public DateTime? DateCheckOut { get; set; }
+        public DateTime DueDate { get; set; }
         public DateTime? DateReturn { get; set; }
     }
 }

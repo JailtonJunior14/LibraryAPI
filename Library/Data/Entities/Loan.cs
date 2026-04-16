@@ -7,7 +7,7 @@ namespace Library.Data.Entities
     {
         public Loan()
         {
-            Status = 0;
+            DateReturn = null;
         }
         public Guid Id { get; set; }
         public Guid BookId { get; set; }
@@ -16,7 +16,6 @@ namespace Library.Data.Entities
         public User User { get; set; }
         public Guid LibrarianId { get; set; }
         public User Librarian { get; set; }
-        public LoanRole Status { get; set; }
         public DateTime DateCheckOut{ get; set; }
         public DateTime DueDate { get; set; }
         public DateTime? DateReturn { get; set; }

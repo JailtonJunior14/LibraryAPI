@@ -51,6 +51,13 @@ namespace Library.Data.Seeds
                 Role = UserRole.student,
                 UserName = "student3",
                 Email = "student3@student.com"
+            },
+            new()
+            {
+                Id = Guid.NewGuid(),
+                Role = UserRole.student,
+                UserName = "student4",
+                Email = "student4@student.com"
             }
         };
 

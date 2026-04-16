@@ -27,23 +27,46 @@ namespace Library.Data.Seeds
         {
             new()
             {
+                //atrasado
                 Id = Guid.NewGuid(),
                 LibrarianId = librarian.Id,
-                UserId = students[rnd.Next(students.Count)].Id,
+                UserId = students[0].Id,
                 BookId = books[rnd.Next(books.Count)].Id,
-                DateCheckOut = DateTime.Now,
-                DateReturn = DateTime.Now.AddDays(7),
-                Status = LoanRole.Pending
+                DateCheckOut = DateTime.Now.AddDays(-5),
+                DueDate = DateTime.Now.AddDays(-3),
             },
             new()
             {
+                //pendente
                 Id = Guid.NewGuid(),
                 LibrarianId = librarian.Id,
-                UserId = students[rnd.Next(students.Count)].Id,
+                UserId = students[1].Id,
                 BookId = books[rnd.Next(books.Count)].Id,
                 DateCheckOut = DateTime.Now,
-                DateReturn = DateTime.Now.AddDays(-3),
-                Status = LoanRole.Late
+                DueDate = DateTime.Now.AddDays(3),
+                
+            },
+             new()
+            {
+                //retornado
+                Id = Guid.NewGuid(),
+                LibrarianId = librarian.Id,
+                UserId = students[2].Id,
+                BookId = books[rnd.Next(books.Count)].Id,
+                DateCheckOut = DateTime.Now,
+                DateReturn = DateTime.Now.AddDays(3),
+                DueDate = DateTime.Now.AddDays(3),
+            },
+              new()
+            {
+                //retornado com atraso
+                Id = Guid.NewGuid(),
+                LibrarianId = librarian.Id,
+                UserId = students[3].Id,
+                BookId = books[rnd.Next(books.Count)].Id,
+                DateCheckOut = DateTime.Now.AddDays(-3),
+                DateReturn = DateTime.Now.AddDays(3),
+                DueDate = DateTime.Now.AddDays(2),
             }
         };
 

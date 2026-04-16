@@ -38,6 +38,7 @@ namespace Library.Services.LoanService
 
                 return loans.Select( l => new LoanDTO
                 {
+                    
                     Book = new BookDTO
                     {
                         Author = l.Book.Author,
@@ -61,11 +62,12 @@ namespace Library.Services.LoanService
                         Name = l.Librarian.UserName,
                         Role = l.Librarian.Role,
                     },
-                    Status = l.Status,
+                    Status = CalculateStatus(l.DueDate, l.DateReturn),
                     Idlibrarian = l.LibrarianId,
                     IdUser = l.UserId,
                     DateCheckOut = l.DateCheckOut,
-                    DateReturn = l.DateReturn
+                    DateReturn = l.DateReturn,
+                    DueDate = l.DueDate,
                 });
             }catch (Exception ex)
             {
@@ -104,7 +106,8 @@ namespace Library.Services.LoanService
 
                 var loanuser = await _loanRepository.GetByUserId(dto.IdUser) ?? throw new Exception("Usuario não encontrado");
 
-                if (loanuser.Where(l => l.Status != Enums.LoanRole.Returned).Any())
+
+                if (loanuser.Where(l => CalculateStatus(l.DueDate, l.DateReturn) != Enums.LoanRole.Returned).Any())
                     throw new Exception("Usuario com livro pendente!!");
                 
                 var book = await _bookRepository.GetById(dto.IdBook) ?? throw new Exception("Livro não encontrado");
@@ -119,14 +122,13 @@ namespace Library.Services.LoanService
                     BookId = dto.IdBook,
                     DateCheckOut = dto.DateCheckOut,
                     DueDate = dto.DueDate,
-                    Status = dto.Status,
                 };
 
                 await _loanRepository.Create(loan);
 
                 return new LoanDTO
                 {
-                    Status = loan.Status,
+                    Status = CalculateStatus(loan.DueDate, loan.DateReturn),
                     DateCheckOut = loan.DateCheckOut,
                     DueDate = loan.DueDate,
                     Idlibrarian = loan.LibrarianId,
@@ -171,7 +173,7 @@ namespace Library.Services.LoanService
 
                 if(dto.IdUser != null) loan.UserId = (Guid)dto.IdUser;
                 if (dto.IdBook != null) loan.BookId = (Guid)dto.IdBook;
-                if(dto.Status != null) loan.Status = (Enums.LoanRole)dto.Status;
+                if(dto.DueDate != null) loan.DueDate = (DateTime)dto.DueDate;
                 if(dto.DateCheckOut != null) loan.DateCheckOut = (DateTime)dto.DateCheckOut;
                 if(dto.DateReturn != null) loan.DateReturn = (DateTime)dto.DateReturn;
 
@@ -182,7 +184,7 @@ namespace Library.Services.LoanService
                     Id = loanF.Id,
                     IdUser = loanF.UserId,
                     IdBook = loanF.BookId,
-                    Status = loanF.Status,
+                    DueDate = loanF.DueDate,
                     DateCheckOut = loanF.DateCheckOut,
                     DateReturn = loanF.DateReturn,
                 };
@@ -200,19 +202,11 @@ namespace Library.Services.LoanService
             {
                 var loan = await _loanRepository.GetById(dto.IdLoan) ?? throw new Exception("Emprestimo não enconttrado!");
 
-                if (await _userRepository.GetById(dto.IdUser) == null && await _userRepository.GetById(dto.Idlibrarian) == null) throw new Exception("Aluno ou Bibliotecario não encontrado");
+                if (await _userRepository.GetById(dto.IdUser) == null || await _userRepository.GetById(dto.Idlibrarian) == null) throw new Exception("Aluno ou Bibliotecario não encontrado");
 
                 if (await _bookRepository.GetById(dto.IdBook) == null) throw new Exception("Livro não encontrado");
 
-
-                if (dto.DateReturn <= loan.DueDate)
-                {
-                    loan.Status = LoanRole.Returned;
-                }
-                else
-                {
-                    loan.Status = LoanRole.Late;
-                }
+                loan.DateReturn = dto.DateReturn;
 
                 await _loanRepository.ReturnBook(loan);
 
@@ -220,9 +214,10 @@ namespace Library.Services.LoanService
                 {
                     DateReturn = loan.DueDate,
                     IdBook = loan.BookId,
-                   Idlibrarian = loan.LibrarianId,
-                   IdLoan = loan.Id,
-                   IdUser = loan.UserId
+                    Idlibrarian = loan.LibrarianId,
+                    IdLoan = loan.Id,
+                    IdUser = loan.UserId,
+                    Status = CalculateStatus(loan.DueDate, loan.DateReturn)
                 };
             }
             catch (Exception e)
@@ -230,6 +225,30 @@ namespace Library.Services.LoanService
                 Log.LogToFile("Returnbook service", e.GetType().ToString(), e.Message);
                 throw;
             }
+        }
+
+        private LoanRole CalculateStatus(DateTime dateDue, DateTime? dateReturn)
+        {
+            // devolveu atrasado
+            if (dateReturn > dateDue)
+            {
+                return LoanRole.ReturnedLate;
+            }
+            // devolveu
+            if (dateReturn.HasValue)
+            {
+                return LoanRole.Returned;
+            }
+
+            // Não devolveu e está atrasado
+            if (DateTime.Today > dateDue)
+            {
+                return LoanRole.Late;
+            }
+            
+
+            // 3 - Ainda dentro do prazo
+            return LoanRole.Pending;
         }
     }
 }

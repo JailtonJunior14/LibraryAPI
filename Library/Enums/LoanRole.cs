@@ -4,6 +4,7 @@
     {
         Pending,
         Late,
-        Returned
+        Returned,
+        ReturnedLate
     }
 }
